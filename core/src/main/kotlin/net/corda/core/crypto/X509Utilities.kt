@@ -17,11 +17,11 @@ import java.io.FileWriter
 import java.io.InputStream
 import java.net.InetAddress
 import java.nio.file.Path
+import java.security.InvalidAlgorithmParameterException
 import java.security.KeyPair
 import java.security.KeyStore
 import java.security.PublicKey
-import java.security.cert.CertificateFactory
-import java.security.cert.X509Certificate
+import java.security.cert.*
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -155,6 +155,24 @@ object X509Utilities {
             IPAddress.isValidIPv6WithNetmask(it) || IPAddress.isValidIPv6(it) || IPAddress.isValidIPv4WithNetmask(it) || IPAddress.isValidIPv4(it)
         }.map { GeneralName(GeneralName.iPAddress, it) }
         return Crypto.createCertificate(issuer, ca.keyPair, subject, publicKey, CLIENT_KEY_USAGE, CLIENT_KEY_PURPOSES, signatureScheme, window, subjectAlternativeName = dnsNames + ipAddresses)
+    }
+
+    fun createCertificatePath(rootCertAndKey: CertificateAndKey, txCertAndKey: CertificateAndKey): CertPathBuilderResult {
+        val intermediateCertificates = setOf(txCertAndKey.certificate)
+        val certStore = CertStore.getInstance("Collection", CollectionCertStoreParameters(intermediateCertificates))
+        val certPathFactory = CertPathBuilder.getInstance("PKIX")
+        val trustAnchor = TrustAnchor(rootCertAndKey.certificate, null)
+        val certPathParameters = try {
+            PKIXBuilderParameters(setOf(trustAnchor), X509CertSelector().apply {
+                certificate = txCertAndKey.certificate
+            })
+        } catch (ex: InvalidAlgorithmParameterException) {
+            throw RuntimeException(ex)
+        }.apply {
+            addCertStore(certStore)
+            isRevocationEnabled = false
+        }
+        return certPathFactory.build(certPathParameters)
     }
 
     /**
