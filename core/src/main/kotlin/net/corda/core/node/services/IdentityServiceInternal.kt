@@ -7,7 +7,7 @@ import java.security.cert.X509Certificate
 /**
  * Functions for the identity service which are intended only for internal node usage.
  */
-interface InternalIdentityService : IdentityService {
+interface IdentityServiceInternal : IdentityService {
     /**
      * Verify and then store the certificates proving that an anonymous party's key is owned by the given full
      * party.

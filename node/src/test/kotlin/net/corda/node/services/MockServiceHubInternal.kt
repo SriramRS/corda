@@ -25,7 +25,7 @@ open class MockServiceHubInternal(
         val customVault: VaultService? = null,
         val keyManagement: KeyManagementService? = null,
         val net: MessagingService? = null,
-        val identity: IdentityService? = MOCK_IDENTITY_SERVICE,
+        val identity: IdentityServiceInternal? = MOCK_IDENTITY_SERVICE,
         val storage: TxWritableStorageService? = MockStorageService(),
         val mapCache: NetworkMapCacheInternal? = MockNetworkMapCache(),
         val scheduler: SchedulerService? = null,
@@ -40,7 +40,7 @@ open class MockServiceHubInternal(
         get() = customVault ?: throw UnsupportedOperationException()
     override val keyManagementService: KeyManagementService
         get() = keyManagement ?: throw UnsupportedOperationException()
-    override val identityService: IdentityService
+    override val identityService: IdentityServiceInternal
         get() = identity ?: throw UnsupportedOperationException()
     override val networkService: MessagingService
         get() = net ?: throw UnsupportedOperationException()

@@ -75,7 +75,7 @@ open class MockServices(val key: KeyPair = generateKeyPair()) : ServiceHub {
 
 @ThreadSafe
 class MockIdentityService(val identities: List<Party>,
-                          val certificates: List<Triple<AnonymousParty, Party, CertPath>> = emptyList()) : IdentityService, SingletonSerializeAsToken() {
+                          val certificates: List<Triple<AnonymousParty, Party, CertPath>> = emptyList()) : IdentityServiceInternal, SingletonSerializeAsToken() {
     private val keyToParties: Map<PublicKey, Party>
         get() = synchronized(identities) { identities.associateBy { it.owningKey } }
     private val nameToParties: Map<X500Name, Party>
@@ -93,6 +93,9 @@ class MockIdentityService(val identities: List<Party>,
     override fun partyFromKey(key: PublicKey): Party? = keyToParties[key]
     override fun partyFromName(name: String): Party? = nameToParties[X500Name(name)]
     override fun partyFromX500Name(principal: X500Name): Party? = nameToParties[principal]
+    override fun registerPath(trustedRoot: X509Certificate, anonymousParty: AnonymousParty, path: CertPath) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     @Throws(IllegalStateException::class)
     override fun assertOwnership(party: Party, anonymousParty: AnonymousParty) {

@@ -5,7 +5,7 @@ import net.corda.core.crypto.AnonymousParty
 import net.corda.core.crypto.Party
 import net.corda.core.crypto.toStringShort
 import net.corda.core.node.services.IdentityService
-import net.corda.core.node.services.InternalIdentityService
+import net.corda.core.node.services.IdentityServiceInternal
 import net.corda.core.serialization.SingletonSerializeAsToken
 import net.corda.core.utilities.loggerFor
 import net.corda.core.utilities.trace
@@ -22,7 +22,7 @@ import javax.security.auth.x500.X500Principal
  * Simple identity service which caches parties and provides functionality for efficient lookup.
  */
 @ThreadSafe
-class InMemoryIdentityService : SingletonSerializeAsToken(), InternalIdentityService {
+class InMemoryIdentityService : SingletonSerializeAsToken(), IdentityServiceInternal {
     companion object {
         private val log = loggerFor<InMemoryIdentityService>()
     }

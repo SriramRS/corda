@@ -6,6 +6,7 @@ import net.corda.core.flows.*
 import net.corda.core.messaging.SingleMessageRecipient
 import net.corda.core.node.NodeInfo
 import net.corda.core.node.PluginServiceHub
+import net.corda.core.node.services.IdentityServiceInternal
 import net.corda.core.node.services.NetworkMapCache
 import net.corda.core.node.services.TxWritableStorageService
 import net.corda.core.serialization.CordaSerializable
@@ -70,6 +71,7 @@ abstract class ServiceHubInternal : PluginServiceHub {
     abstract val schedulerService: SchedulerService
 
     abstract val networkService: MessagingService
+    override abstract val identityService: IdentityServiceInternal
 
     /**
      * Given a list of [SignedTransaction]s, writes them to the given storage for validated transactions and then
