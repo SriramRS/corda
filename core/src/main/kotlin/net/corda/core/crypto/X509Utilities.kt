@@ -64,7 +64,7 @@ object X509Utilities {
     }
 
     /**
-     * Return a bogus X509 for dev purposes.
+     * Return a bogus X509 for dev purposes. Use [getX509Name] for something more real.
      */
     @Deprecated("Full legal names should be specified in all configurations")
     fun getDevX509Name(commonName: String): X500Name {
