@@ -5,6 +5,7 @@ import net.corda.core.crypto.AnonymousParty
 import net.corda.core.crypto.Party
 import net.corda.core.crypto.toStringShort
 import net.corda.core.node.services.IdentityService
+import net.corda.core.node.services.InternalIdentityService
 import net.corda.core.serialization.SingletonSerializeAsToken
 import net.corda.core.utilities.loggerFor
 import net.corda.core.utilities.trace
@@ -21,7 +22,7 @@ import javax.security.auth.x500.X500Principal
  * Simple identity service which caches parties and provides functionality for efficient lookup.
  */
 @ThreadSafe
-class InMemoryIdentityService : SingletonSerializeAsToken(), IdentityService {
+class InMemoryIdentityService : SingletonSerializeAsToken(), InternalIdentityService {
     companion object {
         private val log = loggerFor<InMemoryIdentityService>()
     }
@@ -43,7 +44,19 @@ class InMemoryIdentityService : SingletonSerializeAsToken(), IdentityService {
     @Deprecated("Use partyFromX500Name")
     override fun partyFromName(name: String): Party? = principalToParties[X500Name(name)]
     override fun partyFromX500Name(principal: X500Name): Party? = principalToParties[principal]
-    override fun partyFromAnonymous(party: AnonymousParty): Party? = partyFromKey(party.owningKey)
+    override fun partyFromAnonymous(party: AnonymousParty): Party? {
+        val root = keyToParties[party.owningKey]
+        return if (root != null) {
+            root
+        } else {
+            val path = pathForAnonymous(party)?.certificates?.firstOrNull() ?: return null
+            return if (path is X509Certificate) {
+                partyFromX500Name(X500Name(path.subjectDN.name))
+            } else {
+                throw IllegalArgumentException("Root certificate is not an X.509 certificate")
+            }
+        }
+    }
     override fun partyFromAnonymous(partyRef: PartyAndReference) = partyFromAnonymous(partyRef.party)
 
     override fun assertOwnership(party: Party, anonymousParty: AnonymousParty) {

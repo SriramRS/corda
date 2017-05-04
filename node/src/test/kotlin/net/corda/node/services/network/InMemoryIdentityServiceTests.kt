@@ -17,7 +17,7 @@ import kotlin.test.assertNull
  */
 class InMemoryIdentityServiceTests {
     private companion object {
-        fun buildParty(certAndKey: X509Utilities.CACertAndKey) = Party(X500Name(certAndKey.certificate.subjectX500Principal.name), certAndKey.keyPair.public)
+        fun buildParty(certAndKey: CertificateAndKey) = Party(X500Name(certAndKey.certificate.subjectX500Principal.name), certAndKey.keyPair.public)
     }
 
     @Test

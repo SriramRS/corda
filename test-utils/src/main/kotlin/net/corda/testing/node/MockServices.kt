@@ -99,7 +99,6 @@ class MockIdentityService(val identities: List<Party>,
         check(anonymousToPath[anonymousParty]?.first == party)
     }
     override fun pathForAnonymous(anonymousParty: AnonymousParty): CertPath? = anonymousToPath[anonymousParty]?.second
-    override fun registerPath(trustedRoot: X509Certificate, anonymousParty: AnonymousParty, path: CertPath) { throw UnsupportedOperationException() }
 }
 
 

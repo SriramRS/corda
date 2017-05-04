@@ -17,19 +17,6 @@ interface IdentityService {
     fun registerIdentity(party: Party)
 
     /**
-     * Verify and then store the certificates proving that an anonymous party's key is owned by the given full
-     * party.
-     *
-     * @param trustedRoot root certificate for the identity.
-     * @param anonymousParty an anonymised party belonging to the legal entity.
-     * @param path certificate path from the trusted root to the anonymised party.
-     * @throws IllegalArgumentException if the chain does not link the two parties, or if there is already an existing
-     * certificate chain for the anonymous party. Anonymous parties must always resolve to a single owning party.
-     */
-    @Throws(IllegalArgumentException::class)
-    fun registerPath(trustedRoot: X509Certificate, anonymousParty: AnonymousParty, path: CertPath)
-
-    /**
      * Asserts that an anonymous party maps to the given full party, by looking up the certificate chain associated with
      * the anonymous party and resolving it back to the given full party.
      *
