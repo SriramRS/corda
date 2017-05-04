@@ -8,8 +8,6 @@ import net.corda.testing.ALICE_PUBKEY
 import net.corda.testing.BOB_PUBKEY
 import org.bouncycastle.asn1.x500.X500Name
 import org.junit.Test
-import java.security.InvalidAlgorithmParameterException
-import java.security.cert.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
@@ -18,6 +16,10 @@ import kotlin.test.assertNull
  * Tests for the in memory identity service.
  */
 class InMemoryIdentityServiceTests {
+    private companion object {
+        fun buildParty(certAndKey: X509Utilities.CACertAndKey) = Party(X500Name(certAndKey.certificate.subjectX500Principal.name), certAndKey.keyPair.public)
+    }
+
     @Test
     fun `get all identities`() {
         val service = InMemoryIdentityService()
@@ -69,7 +71,7 @@ class InMemoryIdentityServiceTests {
         val service = InMemoryIdentityService()
         val rootKey = rootCertAndKey.keyPair
         // TODO: Generate certificate with an EdDSA key rather than ECDSA
-        val identity = Party(rootCertAndKey)
+        val identity = buildParty(rootCertAndKey)
         val txIdentity = AnonymousParty(txCertAndKey.keyPair.public)
 
         assertFailsWith<IllegalArgumentException> {
@@ -90,9 +92,9 @@ class InMemoryIdentityServiceTests {
         val bobTxCertAndKey = X509Utilities.createIntermediateCert(BOB.name, bobRootCertAndKey)
         val bobCertPath = X509Utilities.createCertificatePath(bobRootCertAndKey, bobTxCertAndKey).certPath
         val service = InMemoryIdentityService()
-        val alice = Party(aliceRootCertAndKey)
+        val alice = buildParty(aliceRootCertAndKey)
         val anonymousAlice = AnonymousParty(aliceTxCertAndKey.keyPair.public)
-        val bob = Party(bobRootCertAndKey)
+        val bob = buildParty(bobRootCertAndKey)
         val anonymousBob = AnonymousParty(bobTxCertAndKey.keyPair.public)
 
         service.registerPath(aliceRootCertAndKey.certificate, anonymousAlice, aliceCertPath)
